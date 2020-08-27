@@ -1,0 +1,19 @@
+############################
+# STEP 1 build executable binary
+############################
+FROM golang:1.15-alpine AS builder
+RUN apk update && apk add --no-cache build-base ca-certificates
+COPY main.go /tmp
+RUN go build -o /tmp/entry /tmp/main.go
+
+############################
+# STEP 2 build a small image
+############################
+FROM alpine:3.12
+
+LABEL maintainer "WaybackBot <wabarc@tuta.io>"
+COPY --from=builder /tmp/entry /usr/local/bin
+
+WORKDIR /usr/local/bin
+
+CMD /usr/local/bin/entry

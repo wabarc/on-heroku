@@ -1,0 +1,183 @@
+#!/bin/bash
+#
+# Setup Heroku app
+# vim: set et ts=2 sw=2
+set -eu pipefail
+
+dest='/tmp/on-heroku'
+repo='https://github.com/wabarc/on-heroku.git'
+ver='v12.18.3'
+node="node-${ver}-linux-x64"
+loc="/tmp/${node}.tar.xz"
+
+red() {
+  red='\e[91m'
+  none='\e[0m'
+  echo -e "${red}$*${none}"
+}
+
+err() {
+  echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $*" >&2
+}
+
+prepare() {
+  arch="$(arch)"
+  if [ -z "${arch##X86_64}" ]; then
+    err "Unsupport arch..."
+    exit 1
+  fi
+  i='0'
+  os="$(cat </etc/os-release | grep 'NAME=' | sed 's/.*\"\(.*\)\".*/\1/g')"
+  if [ -z "${os##*Debian*}" ] || [ -z "${os##*Ubuntu*}" ]; then
+    i='1'
+    apt-get update -y && apt-get install -y --no-install-recommends git wget xz-utils openssh-client ca-certificates
+  elif [ -z "${os##*Fedora*}" ] || [ -z "${os##*CentOS*}" ]; then
+    i='1'
+    yum update -y && yum install -y xz git wget openssh-clients ca-certificates
+  elif [ -z "${os##*Alpine*}" ]; then
+    apk update && apk add git wget openssh-client ca-certificates nodejs
+    i='1'
+  else
+    err "Unsupport OS"
+    exit 1
+  fi
+  if [ "${i}" = "1" ]; then
+    echo "Downloading the Node.js pre-built installer"
+    wget "https://nodejs.org/dist/v12.18.3/${node}.tar.xz" -O "${loc}"
+    if [ -f "${loc}" ]; then
+      tar -xJf "${loc}" -C /tmp
+      PATH="${PATH}:/tmp/${node}/bin"
+    else
+      err "Download Node.js failure..."
+      exit 1
+    fi
+    if [ -z "$(command -v heroku)" ]; then
+      npm i -g heroku
+    fi
+  else
+    err "Requirement missing..."
+    exit 1
+  fi
+}
+
+login() {
+  heroku_user="$(heroku auth:whoami || true)"
+  if [ -z "${heroku_user}" ]; then
+    heroku login -i
+  else
+    echo "Logged in as ${heroku_user}"
+  fi
+}
+
+add_credential() {
+  if [ ! -f ~/.ssh/id_rsa.pub ]; then
+    ssh-keygen -b 4096 -f ~/.ssh/id_rsa -N ""
+  fi
+  pubkey="$(cat ~/.ssh/id_rsa.pub)"
+  heroku_keys="$(heroku keys -l)"
+  if [ -n "${heroku_keys}" ] && [ -z "${heroku_keys##*$pubkey*}" ]; then
+    echo "Heroku has public key. $(red "skip")"
+  else
+    echo "Uploading public key to Heroku..."
+    heroku keys:add
+  fi
+}
+
+clone_wabarc_repo() {
+  if [ -d "${dest}" ]; then
+    s="$(cat </dev/random | tr -dc "[:lower:]" | head -c 4)"
+    echo "Moving ${dest} to ${dest}-bak-${s} ..."
+    mv "${dest}" "${dest}-bak-${s}"
+  fi
+  git clone "${repo}" "${dest}"
+  cd "${dest}" || exit
+}
+
+setup_heroku_repo() {
+  while [ -z "${scope:+x}" ] || [ -z "$(echo "${scope}" | grep -w "\bcreate\|add\b")" ]; do
+    read -rp "Create or add a heroku app (type $(red "create") or $(red "add")): " scope
+  done
+
+  # If add exists the Heroku app, it requires to type the app name.
+  if [ -z "${scope##*add*}" ]; then
+    while [ -z "${appname:+x}" ]; do
+      read -rp "Please type a heroku app name: " appname
+    done
+  else
+    read -rp "Please type a heroku app name: " appname
+  fi
+
+  if [ -z "${appname:+x}" ] && [ -z "${scope##*create*}" ]; then
+    echo "Heroku app name: $(red 'random name by heroku')"
+  else
+    echo "Heroku app name: $(red "${appname}")"
+  fi
+
+  while [ -z "${confirm:+x}" ] || [ -z "$(echo "${confirm}" | grep -w "\by\|n\|yes\|no\b")" ]; do
+    read -rp "Continue Deploy? (y/n): " confirm
+  done
+  if [ -z "$(echo "${confirm}" | grep -w "\by\|yes\b")" ]; then
+    clean
+    exit 1
+  fi
+
+  if [ -z "${scope##*create*}" ]; then
+    heroku create --ssh-git "${appname}"
+  elif [ -z "${scope##*add*}" ]; then
+    heroku git:remote --ssh-git -a "${appname}"
+  else
+    err "Unknow option"
+    clean
+    exit 1
+  fi
+}
+
+setup_heroku_stack() {
+  heroku stack:set container || true
+}
+
+setup_heroku_conf() {
+  read -rp "Please type run wayback app config vars: " vars
+  if [ -n "${vars}" ]; then
+    heroku config:set "${vars}"
+  else
+    echo "Set config vars: $(red "skip")"
+  fi
+}
+
+deploy() {
+  while [ -z "${d:+x}" ] || [ -z "$(echo "${d}" | grep -w "\by\|n\|yes\|no\b")" ]; do
+    read -rp "Continue Deploy? (y/n): " d
+  done
+  if [ -n "${d##*y*}" ] || [ -n "${d##*yes*}" ]; then
+    git push heroku master -f
+  else
+    echo "Deploy Heroku app: $(red "skip")"
+  fi
+}
+
+start_heroku_dynos() {
+  heroku ps:scale worker=1 || true
+  heroku ps || true
+}
+
+clean() {
+  echo "Complete deploying, cleaning..."
+  npm un -g heroku
+  rm -rf "${dest}"
+  rm -rf "/tmp/${node}*"
+  red "done"
+}
+
+# Perform setup
+prepare
+login
+add_credential
+clone_wabarc_repo
+setup_heroku_repo
+setup_heroku_stack
+setup_heroku_conf
+deploy
+start_heroku_dynos
+clean
+
