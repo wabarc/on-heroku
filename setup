@@ -77,9 +77,11 @@ add_credential() {
   heroku_keys="$(heroku keys -l)"
   if [ -n "${heroku_keys}" ] && [ -z "${heroku_keys##*$pubkey*}" ]; then
     echo "Heroku has public key. $(red "skip")"
+    rkeys=0
   else
     echo "Uploading public key to Heroku..."
     heroku keys:add
+    rkeys=1
   fi
 }
 
@@ -158,11 +160,15 @@ deploy() {
 
 start_heroku_dynos() {
   heroku ps:scale worker=1 || true
+  sleep 3
   heroku ps || true
 }
 
 clean() {
   echo "Complete deploying, cleaning..."
+  if [ "${rkeys}" = "1" ]; then
+    heroku keys:remove "$(whoami)@$(hostname)"
+  fi
   npm un -g heroku
   rm -rf "${dest}"
   rm -rf "/tmp/${node}*"
