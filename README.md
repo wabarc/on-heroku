@@ -86,7 +86,7 @@ PS: if you run with the script, the double quote is unnecessary.
 $ git push heroku master
 ```
 
-#### Start synos
+#### Start dyno
 
 ```sh
 $ heroku ps:scale worker=1
