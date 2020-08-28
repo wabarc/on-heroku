@@ -15,7 +15,7 @@ It will install Node.js in the `/tmp` directory and remove it automatically afte
 # sh <(wget https://raw.githubusercontent.com/wabarc/on-heroku/master/setup -O -)
 ```
 
-Run on Docker container:
+Running on Docker container:
 
 ```sh
 $ docker run -ti --rm debian:stable-slim bash -c "apt update && apt install -y wget \
@@ -70,7 +70,8 @@ $ heroku stack:set container
 
 #### Set a config var
 
-The `WAYBACK_ARGS` config var is required by `wayback` process as an environment variable during running, more useful reference the [wabarc/wayback](https://github.com/wabarc/wayback#usage).
+The `WAYBACK_ARGS` config var is required by `wayback` process as an environment 
+variable during running, more useful reference the [wabarc/wayback](https://github.com/wabarc/wayback#usage).
 
 ```sh
 $ heroku config:set WAYBACK_ARGS="--ia --is --ip -d telegram -t your-telegram-bot-token --debug"
@@ -90,6 +91,43 @@ $ git push heroku master
 
 ```sh
 $ heroku ps:scale worker=1
+```
+
+## Maintenance
+
+If you prefer to run the Heroku app regularly, the `maintenance.sh` is helpful to turn 
+it into maintenance mode by crontab or other. It requires a Heroku authorization token 
+during on running `heroku` command, and you can create one from the [Heroku dashboard](https://dashboard.heroku.com/account/applications/authorizations/new).
+
+### Usage
+
+```
+$ sh maintenance.sh
+Usage: sh maintenance.sh [options]
+
+Options:
+    -a, --app <heroku app name>
+    -h, --help Usage
+    -k  --api-key <heroku authorization token>
+        Heroku authorization token, create an new token:
+        https://dashboard.heroku.com/account/applications/authorizations/new
+    -m, --mode <maintenance mode>
+        Maintenance mode for heroku app, options: on, off (Default: on)
+```
+
+### Example
+
+```sh
+$ wget https://raw.githubusercontent.com/wabarc/on-heroku/master/maintenance.sh -O - | \
+    sh -s - -k your-authorization-token -a your-app-name
+```
+
+running on Docker container:
+
+```sh
+$ docker run -ti --rm alpine:3.12 sh
+# wget https://raw.githubusercontent.com/wabarc/on-heroku/master/maintenance.sh -O - | \
+    sh -s - -k your-authorization-token -a your-app-name -m off
 ```
 
 ## Related projects
