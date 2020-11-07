@@ -12,14 +12,14 @@ The script requires to run with the `root` user, on a Docker container may be be
 It will install Node.js in the `/tmp` directory and remove it automatically after deployment.
 
 ```bash
-# sh <(wget https://raw.githubusercontent.com/wabarc/on-heroku/master/setup -O -)
+# sh <(wget https://raw.githubusercontent.com/wabarc/on-heroku/main/setup -O -)
 ```
 
 Running on Docker container:
 
 ```sh
 $ docker run -ti --rm debian:stable-slim bash -c "apt update && apt install -y wget \
-    && sh <(wget https://raw.githubusercontent.com/wabarc/on-heroku/master/setup -O -)"
+    && sh <(wget https://raw.githubusercontent.com/wabarc/on-heroku/main/setup -O -)"
 ```
 
 ### Manual
@@ -84,7 +84,7 @@ PS: if you run with the script, the double quote is unnecessary.
 #### Deploy to heroku
 
 ```sh
-$ git push heroku master
+$ git push heroku main
 ```
 
 #### Start dyno
@@ -118,7 +118,7 @@ Options:
 ### Example
 
 ```sh
-$ wget https://raw.githubusercontent.com/wabarc/on-heroku/master/maintenance.sh -O - | \
+$ wget https://raw.githubusercontent.com/wabarc/on-heroku/main/maintenance.sh -O - | \
     sh -s - -k your-authorization-token -a your-app-name
 ```
 
@@ -126,7 +126,7 @@ running on Docker container:
 
 ```sh
 $ docker run -ti --rm alpine:3.12 sh
-# wget https://raw.githubusercontent.com/wabarc/on-heroku/master/maintenance.sh -O - | \
+# wget https://raw.githubusercontent.com/wabarc/on-heroku/main/maintenance.sh -O - | \
     sh -s - -k your-authorization-token -a your-app-name -m off
 ```
 
@@ -141,4 +141,4 @@ $ docker run -ti --rm alpine:3.12 sh
 
 ## License
 
-Permissive GPL 3.0 license, see the [LICENSE](https://github.com/wabarc/on-heroku/blob/master/LICENSE) file for details.
+Permissive GPL 3.0 license, see the [LICENSE](https://github.com/wabarc/on-heroku/blob/main/LICENSE) file for details.
