@@ -19,7 +19,7 @@ Running on Docker container:
 
 ```sh
 $ docker run -ti --rm debian:stable-slim bash -c "apt update && apt install -y wget \
-    && sh <(wget https://raw.githubusercontent.com/wabarc/on-heroku/main/setup -O -)"
+    && bash <(wget https://raw.githubusercontent.com/wabarc/on-heroku/main/setup -O -)"
 ```
 
 ### Manual

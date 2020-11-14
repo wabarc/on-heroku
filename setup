@@ -106,7 +106,7 @@ setup_heroku_repo() {
       read -rp "Please type a heroku app name: " appname
     done
   else
-    read -rp "Please type a heroku app name: " appname
+    read -rp "Please type a heroku app name or create by heroku: " appname
   fi
 
   if [ -z "${appname:+x}" ] && [ -z "${scope##*create*}" ]; then
@@ -141,9 +141,10 @@ setup_heroku_stack() {
 setup_heroku_conf() {
   read -rp "Please type run wayback app config vars: " vars
   if [ -n "${vars}" ]; then
-    heroku config:set "${vars}"
-  else
-    echo "Set config vars: $(red "skip")"
+    IFS="," read -ra fields <<<"${vars}"
+    for var in "${fields[@]}"; do
+      heroku config:set "${var}"
+    done
   fi
 }
 
@@ -152,7 +153,7 @@ deploy() {
     read -rp "Continue Deploy? (y/n): " d
   done
   if [ -n "${d##*y*}" ] || [ -n "${d##*yes*}" ]; then
-    git push heroku master -f
+    git push heroku main -f
   else
     echo "Deploy Heroku app: $(red "skip")"
   fi
