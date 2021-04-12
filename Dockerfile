@@ -1,29 +1,48 @@
-FROM ghcr.io/wabarc/wayback:latest
+FROM ghcr.io/wabarc/wayback
 
-LABEL maintainer "Wayback Archiver <wabarc@tuta.io>"
+LABEL org.wabarc.homepage="http://github.com/wabarc" \
+      org.wabarc.repository="http://github.com/wabarc/on-github" \
+      com.github.actions.name="on-github" \
+      com.github.actions.description="Host wayback service on GitHub using Actions." \
+      com.github.actions.icon="package" \
+      com.github.actions.color="red"
 
 ENV BASE_DIR /wayback
 
-COPY supervisord.conf /etc/
-COPY entrypoint.sh /
-
-# Install packages
-RUN set -x \
-    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" > /etc/apk/repositories \
-    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
-    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
-    \
-    && apk update \
-    && apk add --no-cache dbus dumb-init libstdc++ nss chromium harfbuzz nss freetype ttf-freefont font-noto-emoji font-noto-cjk \
-    && apk add --no-cache ca-certificates supervisor curl \
-    \
-    ## Clean
-    && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
-
-RUN chmod +x /entrypoint.sh
-RUN rm -rf /var/cache/apk/*
-
-#USER tor
 WORKDIR ${BASE_DIR}
 
-CMD /usr/bin/supervisord
+# Ref: https://wiki.alpinelinux.org/wiki/Fonts
+RUN set -o pipefail && \
+    apk upgrade -U -a && \
+    apk add --no-cache \
+    dbus \
+    dumb-init \
+    libstdc++ \
+    nss \
+    chromium \
+    harfbuzz \
+    freetype \
+    ttf-freefont \
+    ttf-font-awesome \
+    font-noto \
+    font-noto-arabic \
+    font-noto-emoji \
+    font-noto-cjk \
+    font-noto-extra \
+    font-noto-lao \
+    font-noto-myanmar \
+    font-noto-thai \
+    font-noto-tibetan \
+    supervisor \
+    ca-certificates \
+    py3-setuptools \
+ && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
+
+COPY entrypoint.sh /
+COPY supervisord.conf /etc/
+
+RUN chmod a+w /var/log/tor
+
+USER wayback
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
