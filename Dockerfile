@@ -13,7 +13,6 @@ WORKDIR ${BASE_DIR}
 
 # Ref: https://wiki.alpinelinux.org/wiki/Fonts
 RUN set -o pipefail && \
-    apk upgrade -U -a && \
     apk add --no-cache \
     dbus \
     dumb-init \
@@ -41,8 +40,11 @@ RUN set -o pipefail && \
 COPY entrypoint.sh /
 COPY supervisord.conf /etc/
 
-RUN chmod a+w /var/log/tor
+RUN chown wayback:nogroup /var/log/tor && \
+    chown wayback:nogroup /var/lib/tor
 
 USER wayback
+
+ENTRYPOINT ["dumb-init", "--"]
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
