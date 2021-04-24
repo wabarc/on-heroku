@@ -153,6 +153,7 @@ deploy() {
     read -rp "Continue Deploy? (y/n): " d
   done
   if [ -n "${d##*y*}" ] || [ -n "${d##*yes*}" ]; then
+    git commit --allow-empty -m "Trigger Build"
     git push heroku main -f
   else
     echo "Deploy Heroku app: $(red "skip")"
