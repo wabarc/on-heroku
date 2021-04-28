@@ -1,7 +1,6 @@
 #!/bin/sh
 #
 # Perform wayback
-set -eu pipefail
 
 # check dependency
 command -v wayback > /dev/null || { echo "wayback is not installed in this system" 1>&2; exit 1; }
