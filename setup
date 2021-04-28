@@ -153,6 +153,8 @@ deploy() {
     read -rp "Continue Deploy? (y/n): " d
   done
   if [ -n "${d##*y*}" ] || [ -n "${d##*yes*}" ]; then
+    git config --local user.name 'nobody'
+    git config --local user.email 'nobody@world.tld'
     git commit --allow-empty -m "Trigger Build"
     git push heroku main -f
   else
