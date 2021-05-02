@@ -1,0 +1,171 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [deploy]
+
+jobs:
+  continue:
+    name: Continue
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.from == 'wabarc/wayback' }} || ${{ github.event_name == 'workflow_dispatch' }}
+    steps:
+      - name: Continue
+        run: |
+          echo 'Deploy continue'
+
+  demo-x:
+    name: Deploy Heroku X
+    runs-on: ubuntu-latest
+    needs: continue
+    if: ${{ github.event.client_payload.channel == 'stable' || github.event_name == 'workflow_dispatch' }}
+    env:
+      HEROKU_APPNAME: ${{ secrets.HEROKU_APPNAME_X }}
+      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY_X }}
+    steps:
+      - name: Check out code base
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Heroku
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: Set up Heroku repository
+        run: |
+          #git remote add heroku "https://${HEROKU_USERNAME}:${HEROKU_API_KEY}@git.heroku.com/${HEROKU_APPNAME}.git"
+          git remote add heroku "git@heroku.com:${HEROKU_APPNAME}.git"
+
+      - name: Login to the registry
+        run: |
+          # docker login --username=_ --password=$(heroku auth:token) registry.heroku.com
+          heroku container:login
+
+      - name: Deploy images
+        run: |
+          # docker push registry.heroku.com/<app>/<process-type>
+          heroku container:push worker --recursive
+
+      - name: Release container
+        run: |
+          heroku container:release worker
+
+      - name: Scale dynos
+        run: |
+          heroku ps:scale worker=1
+          sleep 3
+          #heroku ps:scale web=1
+          #sleep 1
+          heroku ps
+
+  demo-k:
+    name: Deploy Heroku K
+    runs-on: ubuntu-latest
+    needs: continue
+    if: ${{ github.event.client_payload.channel == 'stable' || github.event_name == 'workflow_dispatch' }}
+    env:
+      HEROKU_APPNAME: ${{ secrets.HEROKU_APPNAME_K }}
+      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY_K }}
+    steps:
+      - name: Check out code base
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Heroku
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: Set up Heroku repository
+        run: |
+          #git remote add heroku "https://${HEROKU_USERNAME}:${HEROKU_API_KEY}@git.heroku.com/${HEROKU_APPNAME}.git"
+          git remote add heroku "git@heroku.com:${HEROKU_APPNAME}.git"
+
+      - name: Login to the registry
+        run: |
+          # docker login --username=_ --password=$(heroku auth:token) registry.heroku.com
+          heroku container:login
+
+      - name: Deploy images
+        run: |
+          # docker push registry.heroku.com/<app>/<process-type>
+          heroku container:push worker --recursive
+
+      - name: Release container
+        run: |
+          heroku container:release worker
+
+      - name: Scale dynos
+        run: |
+          heroku ps:scale worker=1
+          sleep 3
+          #heroku ps:scale web=1
+          #sleep 1
+          heroku ps
+
+  demo-testing:
+    name: Deploy Heroku T
+    runs-on: ubuntu-latest
+    needs: continue
+    env:
+      HEROKU_APPNAME: ${{ secrets.HEROKU_APPNAME_T }}
+      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY_T }}
+    steps:
+      - name: Check out code base
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Replace base image
+        run: |
+          echo 'original:'
+          head -n1 worker/Dockerfile.worker
+          sed -i 's/ghcr.io\/wabarc\/wayback/ghcr.io\/wabarc\/wayback:edge/g' worker/Dockerfile.worker
+          echo 'replaced:'
+          head -n1 worker/Dockerfile.worker
+
+      - name: Set up Heroku
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: Set up Heroku repository
+        run: |
+          #git remote add heroku "https://${HEROKU_USERNAME}:${HEROKU_API_KEY}@git.heroku.com/${HEROKU_APPNAME}.git"
+          git remote add heroku "git@heroku.com:${HEROKU_APPNAME}.git"
+
+      - name: Login to the registry
+        run: |
+          # docker login --username=_ --password=$(heroku auth:token) registry.heroku.com
+          heroku container:login
+
+      - name: Deploy images
+        run: |
+          # docker push registry.heroku.com/<app>/<process-type>
+          heroku container:push worker --recursive
+
+      - name: Release container
+        run: |
+          heroku container:release worker
+
+      - name: Scale dynos
+        run: |
+          heroku ps:scale worker=1
+          sleep 3
+          #heroku ps:scale web=1
+          #sleep 1
+          heroku ps
+
+  dispatch:
+    name: Repository Dispatch
+    runs-on: ubuntu-latest
+    needs: [demo-x, demo-k]
+    steps:
+    - name: Dispatch repository in wabarc/on-heroku
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        repository: wabarc/heroku-schedule
+        event-type: release
+        token: ${{ secrets.PAT_WORKFLOW }}
+        client-payload: '{"from": "${{ github.repository }}"}'

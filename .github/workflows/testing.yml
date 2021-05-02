@@ -1,0 +1,29 @@
+name: Testing
+
+on:
+  push:
+
+jobs:
+  testing:
+    name: Testing
+    runs-on: ubuntu-latest
+    env:
+      HEROKU_APPNAME: ${{ secrets.HEROKU_APPNAME }}
+      #HEROKU_USERNAME: ${{ secrets.HEROKU_USERNAME }}
+      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+    steps:
+      - name: Check out code base
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Build images
+        run: |
+          make web <<<${{ secrets.HEROKU_APPNAME_X }}
+          make worker <<<${{ secrets.HEROKU_APPNAME_X }}
+          make web <<<${{ secrets.HEROKU_APPNAME_K }}
+          make worker <<<${{ secrets.HEROKU_APPNAME_K }}
+
+      - name: List images
+        run: |
+          docker images

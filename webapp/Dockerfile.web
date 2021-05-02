@@ -1,0 +1,17 @@
+FROM golang:1-alpine AS builder
+
+RUN apk update && apk add --no-cache build-base ca-certificates
+
+WORKDIR /src
+COPY main.go .
+RUN go build -o /tmp/entry main.go
+
+FROM alpine:3.13
+
+LABEL org.wabarc.homepage="http://github.com/wabarc"
+
+COPY --from=builder /tmp/entry /usr/local/bin
+
+WORKDIR /usr/local/bin
+
+CMD /usr/local/bin/entry

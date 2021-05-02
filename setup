@@ -2,7 +2,7 @@
 #
 # Setup Heroku app
 # vim: set et ts=2 sw=2
-set -eu pipefail
+set -eu
 
 dest='/tmp/on-heroku'
 repo='https://github.com/wabarc/on-heroku.git'
@@ -179,15 +179,51 @@ clean() {
   red "done"
 }
 
-# Perform setup
-prepare
-login
-add_credential
-clone_wabarc_repo
-setup_heroku_repo
-setup_heroku_stack
-setup_heroku_conf
-deploy
-start_heroku_dynos
-clean
+main() {
+	target="${1:-}"
+  case "${target}" in
+  "prepare")
+    prepare
+    ;;
+  "login")
+    login
+    ;;
+  "credential")
+    add_credential
+    ;;
+  "repo" | "clone")
+    clone_wabarc_repo
+    ;;
+  "stack")
+    setup_heroku_stack
+    ;;
+  "conf" | "config")
+    setup_heroku_conf
+    ;;
+  "deploy")
+    deploy
+    ;;
+  "start" | "scale")
+    start_heroku_dynos
+    ;;
+  "clean")
+    clean
+    ;;
+  *)
+    # Perform setup
+    prepare
+    login
+    add_credential
+    clone_wabarc_repo
+    setup_heroku_repo
+    setup_heroku_stack
+    setup_heroku_conf
+    deploy
+    start_heroku_dynos
+    clean
+    ;;
+  esac
+}
+
+main "$@"
 
