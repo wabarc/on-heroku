@@ -1,48 +1,22 @@
 package main
 
 import (
-	"fmt"
-	"io"
-	"net"
-	"os"
+	"flag"
+	"net/http"
 )
 
+var port string
+
+func redirect(w http.ResponseWriter, req *http.Request) {
+	println("Redirecting to: " + "https://" + req.Host + req.URL.String())
+	if req.Header.Get("X-Forwarded-Proto") == "http" {
+		http.Redirect(w, req, "https://"+req.Host+req.URL.String(), http.StatusMovedPermanently)
+	}
+}
+
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		panic("Missing PORT environment variable")
-	}
-	ln, err := net.Listen("tcp", ":"+port)
-	if err != nil {
-		panic(err)
-	}
+	flag.StringVar(&port, "port", "80", "Port listen on")
+	flag.Parse()
 
-	for {
-		conn, err := ln.Accept()
-		if err != nil {
-			panic(err)
-		}
-
-		go handleRequest(conn)
-	}
-}
-
-func handleRequest(conn net.Conn) {
-	fmt.Println("new client")
-
-	addr := net.JoinHostPort("127.0.0.1", os.Getenv("WAYBACK_TOR_LOCAL_PORT"))
-	proxy, err := net.Dial("tcp", addr)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("proxy connected")
-	go copyIO(conn, proxy)
-	go copyIO(proxy, conn)
-}
-
-func copyIO(src, dest net.Conn) {
-	defer src.Close()
-	defer dest.Close()
-	io.Copy(src, dest)
+	http.ListenAndServe(":"+port, http.HandlerFunc(redirect))
 }

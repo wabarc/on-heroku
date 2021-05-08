@@ -1,17 +1,45 @@
-FROM golang:1-alpine AS builder
-
-RUN apk update && apk add --no-cache build-base ca-certificates
-
-WORKDIR /src
-COPY main.go .
-RUN go build -o /tmp/entry main.go
+#FROM docker.io/library/golang:1-alpine AS builder
+#
+#RUN apk update && apk add --no-cache build-base ca-certificates
+#
+#WORKDIR /src
+#COPY main.go .
+#RUN go build -trimpath --ldflags '-s -w' -o redirect main.go
 
 FROM alpine:3.13
 
 LABEL org.wabarc.homepage="http://github.com/wabarc"
 
-COPY --from=builder /tmp/entry /usr/local/bin
+RUN set -o pipefail && \
+    apk add --no-cache \
+    dbus \
+    dumb-init \
+    supervisor \
+    ca-certificates \
+    py3-setuptools \
+    tor \
+    curl \
+    socat \
+    libcap \
+ && cp /etc/tor/torrc.sample /etc/tor/torrc \
+ && echo 'SocksPort 9050' >> /etc/tor/torrc \
+ && echo 'StrictNodes 1' >> /etc/tor/torrc \
+ && setcap 'cap_net_bind_service=+ep' /usr/bin/socat \
+ && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
-WORKDIR /usr/local/bin
+#COPY --from=builder /src/redirect /usr/local/bin/
+COPY supervisord.conf /etc/
+COPY echo.sh /
 
-CMD /usr/local/bin/entry
+# Set Tor Hidden Service default value
+ENV TOR_HOST=wizmoki7pm5r2bco4holq467cq53kicttzge47fmxtis4x6tpt2u4nqd.onion:80
+
+EXPOSE 80
+EXPOSE 443
+
+ENTRYPOINT ["dumb-init", "--"]
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+
+HEALTHCHECK --interval=5m --start-period=30s \
+  CMD curl -f http://localhost:$PORT/ || exit 1
