@@ -14,7 +14,13 @@ fi
 if [ -n "${WAYBACK_TOR_LOCAL_PORT}" ]; then
     export PORT=$WAYBACK_TOR_LOCAL_PORT
 fi
-export CHROMEDP_NO_SANDBOX=true
+
+if [ -z "${CHROMEDP_NO_SANDBOX}" ]; then
+    export CHROMEDP_NO_SANDBOX=true
+fi
+if [ -z "${CHROMEDP_DISABLE_GPU}" ]; then
+    export CHROMEDP_DISABLE_GPU=true
+fi
 
 # execute wayback command
 # more args see: https://github.com/wabarc/wayback#usage
