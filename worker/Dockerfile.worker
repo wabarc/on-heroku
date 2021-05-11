@@ -40,6 +40,8 @@ COPY supervisord.conf /etc/
 
 RUN chown wayback:nogroup /var/log/tor && \
     chown wayback:nogroup /var/lib/tor && \
+    chmod a+r /etc/supervisord.conf && \
+    chmod a+r /entrypoint.sh && \
     setcap 'cap_net_bind_service=+ep' /usr/bin/socat
 
 USER wayback
@@ -47,6 +49,9 @@ USER wayback
 EXPOSE 80
 EXPOSE 443
 EXPOSE 8964
+
+ENV CHROME_BIN=/usr/bin/chromium-browser \
+    CHROME_PATH=/usr/lib/chromium/
 
 ENTRYPOINT ["dumb-init", "--"]
 
