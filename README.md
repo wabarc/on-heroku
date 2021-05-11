@@ -93,6 +93,30 @@ $ git push heroku main
 $ heroku ps:scale worker=1
 ```
 
+### Deploy with heroku.yml
+
+1. Clone repository
+
+```sh
+$ git clone https://github.com/wabarc/on-heroku.git
+```
+
+2. Add Heroku remote repository
+
+```sh
+$ git remote add heroku git@heroku.com:appname.git
+```
+
+3. Set the stack of your app to container
+```sh
+$ heroku stack:set container
+```
+
+4. Push to Heroku
+```sh
+$ git push heroku main
+```
+
 ## Maintenance
 
 If you prefer to run the Heroku app regularly, the `maintenance.sh` is helpful to turn 
