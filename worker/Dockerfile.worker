@@ -51,7 +51,8 @@ EXPOSE 443
 EXPOSE 8964
 
 ENV CHROME_BIN=/usr/bin/chromium-browser \
-    CHROME_PATH=/usr/lib/chromium/
+    CHROME_PATH=/usr/lib/chromium/ \
+    GC_MEM=2048
 
 ENTRYPOINT ["dumb-init", "--"]
 
