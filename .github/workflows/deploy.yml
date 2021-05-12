@@ -163,7 +163,7 @@ jobs:
     needs: [demo-x, demo-k]
     steps:
     - name: Dispatch repository in wabarc/on-heroku
-      uses: peter-evans/repository-dispatch@v1
+      uses: peter-evans/repository-dispatch@v1.1.3
       with:
         repository: wabarc/heroku-schedule
         event-type: release
