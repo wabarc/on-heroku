@@ -19,10 +19,10 @@ jobs:
 
       - name: Build images
         run: |
-          make web <<<${{ secrets.HEROKU_APPNAME_X }}
-          make worker <<<${{ secrets.HEROKU_APPNAME_X }}
-          make web <<<${{ secrets.HEROKU_APPNAME_K }}
-          make worker <<<${{ secrets.HEROKU_APPNAME_K }}
+          make build-web <<<${{ secrets.HEROKU_APPNAME_X }}
+          make build-worker <<<${{ secrets.HEROKU_APPNAME_X }}
+          make build-web <<<${{ secrets.HEROKU_APPNAME_K }}
+          make build-worker <<<${{ secrets.HEROKU_APPNAME_K }}
 
       - name: List images
         run: |
