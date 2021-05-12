@@ -25,7 +25,7 @@ jobs:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY_X }}
     steps:
       - name: Check out code base
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.3.4
         with:
           fetch-depth: 0
 
@@ -70,7 +70,7 @@ jobs:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY_K }}
     steps:
       - name: Check out code base
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.3.4
         with:
           fetch-depth: 0
 
@@ -114,7 +114,7 @@ jobs:
       HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY_T }}
     steps:
       - name: Check out code base
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.3.4
         with:
           fetch-depth: 0
 
