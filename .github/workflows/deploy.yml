@@ -46,18 +46,16 @@ jobs:
       - name: Deploy images
         run: |
           # docker push registry.heroku.com/<app>/<process-type>
-          heroku container:push worker --recursive
+          heroku container:push worker web --recursive
 
       - name: Release container
         run: |
-          heroku container:release worker
+          heroku container:release --app=${HEROKU_APPNAME} worker web
 
       - name: Scale dynos
         run: |
           heroku ps:scale worker=1
-          sleep 3
-          #heroku ps:scale web=1
-          #sleep 1
+          heroku ps:scale web=1
           heroku ps
 
   demo-k:
@@ -91,18 +89,16 @@ jobs:
       - name: Deploy images
         run: |
           # docker push registry.heroku.com/<app>/<process-type>
-          heroku container:push worker --recursive
+          heroku container:push worker web --recursive
 
       - name: Release container
         run: |
-          heroku container:release worker
+          heroku container:release --app=${HEROKU_APPNAME} worker web
 
       - name: Scale dynos
         run: |
           heroku ps:scale worker=1
-          sleep 3
-          #heroku ps:scale web=1
-          #sleep 1
+          heroku ps:scale web=1
           heroku ps
 
   demo-testing:
@@ -143,18 +139,16 @@ jobs:
       - name: Deploy images
         run: |
           # docker push registry.heroku.com/<app>/<process-type>
-          heroku container:push worker --recursive
+          heroku container:push worker web --recursive
 
       - name: Release container
         run: |
-          heroku container:release worker
+          heroku container:release --app=${HEROKU_APPNAME} worker web
 
       - name: Scale dynos
         run: |
           heroku ps:scale worker=1
-          sleep 3
-          #heroku ps:scale web=1
-          #sleep 1
+          heroku ps:scale web=1
           heroku ps
 
   dispatch:
