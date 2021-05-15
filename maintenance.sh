@@ -96,10 +96,12 @@ prepare() {
 maintenance() {
   if [ "${mode}" = "on" ]; then
     HEROKU_API_KEY="${api_key}" heroku maintenance:on -a "${app_name}"
+    HEROKU_API_KEY="${api_key}" heroku ps:scale web=0 -a "${app_name}"
     HEROKU_API_KEY="${api_key}" heroku ps:scale worker=0 -a "${app_name}"
   fi
   if [ "${mode}" = "off" ]; then
     HEROKU_API_KEY="${api_key}" heroku maintenance:off -a "${app_name}"
+    HEROKU_API_KEY="${api_key}" heroku ps:scale web=1 -a "${app_name}"
     HEROKU_API_KEY="${api_key}" heroku ps:scale worker=1 -a "${app_name}"
   fi
 }
