@@ -163,6 +163,12 @@ $ docker run -ti --rm alpine:3.12 sh
 - [Heroku](https://heroku.com/)
 - [ShellCheck](https://www.shellcheck.net/)
 
+## F.A.Q
+
+For Heroku free accounts, if an app has a free web dyno, and that dyno receives no web traffic 
+in a 30-minute period, it will sleep. You may need a tool (e.g. crontab, [Cronitor](https://cronitor.io/), [New Relic](https://newrelic.com/)) 
+to request `https://your-app.herokuapp.com/healthcheck` regularly to prevent it from sleeping.
+
 ## License
 
 Permissive GPL 3.0 license, see the [LICENSE](https://github.com/wabarc/on-heroku/blob/main/LICENSE) file for details.
