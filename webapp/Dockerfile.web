@@ -10,6 +10,9 @@ FROM alpine:3.13
 
 LABEL org.wabarc.homepage="http://github.com/wabarc"
 
+ARG TOR_EXCLUDE_NODE="{cn},{hk},{mo},{sg},{th},{pk},{by},{ru},{ir},{sy},{vn},{ph},{my},{cu}"
+ARG TOR_EXCLUDE_EXIT_NODE="{cn},{hk},{mo},{sg},{kp},{th},{pk},{by},{ru},{ir},{sy},{vn},{ph},{my},{cu},{au},{ca},{nz},{gb},{us},{fr},{dk},{nl},{no},{be},{de},{it},{es}"
+
 RUN set -o pipefail && \
     apk add --no-cache \
     dbus \
@@ -23,6 +26,8 @@ RUN set -o pipefail && \
     libcap \
  && cp /etc/tor/torrc.sample /etc/tor/torrc \
  && echo 'SocksPort 9050' >> /etc/tor/torrc \
+ && echo "ExcludeNodes ${TOR_EXCLUDE_NODE}" >> /etc/tor/torrc \
+ && echo "ExcludeExitNodes ${TOR_EXCLUDE_EXIT_NODE}" >> /etc/tor/torrc \
  && echo 'StrictNodes 1' >> /etc/tor/torrc \
  && setcap 'cap_net_bind_service=+ep' /usr/bin/socat \
  && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
