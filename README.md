@@ -1,5 +1,7 @@
 # on-heroku
 
+> If you prefer to run webapp and worker, please checkout dynos branch.
+
 `on-heroku` is designed to deploy the `wayback` service as a Heroku app, expect to
 reduce the cost of running the `wayback` service, and providing additional anonymity.
 
@@ -90,7 +92,7 @@ $ git push heroku main
 #### Start dyno
 
 ```sh
-$ heroku ps:scale worker=1
+$ heroku ps:scale web=1
 ```
 
 ### Deploy with heroku.yml

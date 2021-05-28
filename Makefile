@@ -1,42 +1,42 @@
+# Heroku documentation: https://devcenter.heroku.com/articles/container-registry-and-runtime
+#
+HEROKU ?= $(shell which heroku)
 DOCKER ?= $(shell which docker || which podman)
 APPNAME ?= $(shell bash -c 'read -p "App name: " enter; echo $${enter}')
 REGISTRY := registry.heroku.com
 
 .PHONY: build
 build:
-	@$(MAKE) build-web
-	@$(MAKE) build-worker
-
-.PHONY: build-web
-build-web:
-	@$(DOCKER) build -t registry.heroku.com/${APPNAME}/web -f ./webapp/Dockerfile.web ./webapp
-
-.PHONY: build-worker
-build-worker:
-	@$(DOCKER) build -t registry.heroku.com/${APPNAME}/worker -f ./worker/Dockerfile.worker ./worker
+	@$(DOCKER) build -t registry.heroku.com/${APPNAME}/web .
 
 .PHONY: login
 login:
-	@heroku container:login
+	#@heroku container:login
+	@echo "Login container registry using Docker CLI"
+	@$(DOCKER) login --username=_ --password="$(shell read -p 'Heroku API Key: ' key; echo $${key})" ${REGISTRY}
 
 .PHONY: logout
 logout:
-	@heroku container:logout
+	@echo "Logout container registry using Docker CLI"
+	@$(DOCKER) login --username=_ --password="$(shell read -p 'Heroku API Key: ' key; echo $${key})" ${REGISTRY}
 
 .PHONY: push
 push:
 ifeq (,$(findstring $(DOCKER),podman))
+	@echo "Pushing webapp"
 	@$(DOCKER) push --format=v2s2 registry.heroku.com/${APPNAME}/web
-	@$(DOCKER) push --format=v2s2 registry.heroku.com/${APPNAME}/worker
 else
 	@$(DOCKER) push registry.heroku.com/${APPNAME}/web
-	@$(DOCKER) push registry.heroku.com/${APPNAME}/worker
 endif
 
 .PHONY: release
 release:
-	@heroku container:release --app=${APPNAME} web
-	@heroku container:release --app=${APPNAME} worker
+ifeq (,$(findstring $(HEROKU),heroku))
+	@echo "Release webapp"
+	@$(HEROKU) container:release --app=${APPNAME} web
+else
+	@echo "Release container by API, unsupport currently. Please run `make manual` first to releasing app"
+endif
 
 # Docker in Docker or Podman in Podman
 .PHONY: manual
@@ -50,11 +50,3 @@ else
 		sh -c "cd /on-heroku; apk add --no-cache build-base vim git curl;
 			curl https://cli-assets.heroku.com/install.sh | sh; make login; sh"
 endif
-
-.PHONY: manual-build-web
-manual-build-web:
-	@$(MAKE) build-web
-
-.PHONY: manual-build-worker
-manual-build-worker:
-	@$(MAKE) build-worker

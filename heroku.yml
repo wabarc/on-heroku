@@ -1,7 +1,5 @@
 build:
   docker:
-    web: ./webapp/Dockerfile.web
-    worker: ./worker/Dockerfile.worker
+    web: ./Dockerfile
 run:
   web: /usr/bin/supervisord
-  worker: /usr/bin/supervisord

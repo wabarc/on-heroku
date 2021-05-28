@@ -46,15 +46,14 @@ jobs:
       - name: Deploy images
         run: |
           # docker push registry.heroku.com/<app>/<process-type>
-          heroku container:push worker web --recursive
+          heroku container:push web
 
       - name: Release container
         run: |
-          heroku container:release --app=${HEROKU_APPNAME} worker web
+          heroku container:release --app=${HEROKU_APPNAME} web
 
       - name: Scale dynos
         run: |
-          heroku ps:scale worker=1
           heroku ps:scale web=1
           heroku ps
 
@@ -89,15 +88,14 @@ jobs:
       - name: Deploy images
         run: |
           # docker push registry.heroku.com/<app>/<process-type>
-          heroku container:push worker web --recursive
+          heroku container:push web
 
       - name: Release container
         run: |
-          heroku container:release --app=${HEROKU_APPNAME} worker web
+          heroku container:release --app=${HEROKU_APPNAME} web
 
       - name: Scale dynos
         run: |
-          heroku ps:scale worker=1
           heroku ps:scale web=1
           heroku ps
 
@@ -117,10 +115,10 @@ jobs:
       - name: Replace base image
         run: |
           echo 'original:'
-          head -n1 worker/Dockerfile.worker
-          sed -i 's/ghcr.io\/wabarc\/wayback/ghcr.io\/wabarc\/wayback:edge/g' worker/Dockerfile.worker
+          head -n1 ./Dockerfile
+          sed -i 's/ghcr.io\/wabarc\/wayback/ghcr.io\/wabarc\/wayback:edge/g' ./Dockerfile
           echo 'replaced:'
-          head -n1 worker/Dockerfile.worker
+          head -n1 ./Dockerfile
 
       - name: Set up Heroku
         run: |
@@ -139,15 +137,14 @@ jobs:
       - name: Deploy images
         run: |
           # docker push registry.heroku.com/<app>/<process-type>
-          heroku container:push worker web --recursive
+          heroku container:push web
 
       - name: Release container
         run: |
-          heroku container:release --app=${HEROKU_APPNAME} worker web
+          heroku container:release --app=${HEROKU_APPNAME} web
 
       - name: Scale dynos
         run: |
-          heroku ps:scale worker=1
           heroku ps:scale web=1
           heroku ps
 

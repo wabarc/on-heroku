@@ -163,7 +163,7 @@ deploy() {
 }
 
 start_heroku_dynos() {
-  heroku ps:scale worker=1 || true
+  heroku ps:scale web=1 || true
   sleep 3
   heroku ps || true
 }
