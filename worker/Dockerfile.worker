@@ -46,6 +46,10 @@ RUN chown wayback:nogroup /var/log/tor && \
 
 USER wayback
 
+ENV WAYBACK_TOR_LOCAL_PORT=8964
+ENV SOCAT_OPTIONS="-d"
+ENV PORT=80
+
 EXPOSE 80
 EXPOSE 443
 EXPOSE 8964

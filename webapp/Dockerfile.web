@@ -23,7 +23,7 @@ RUN set -o pipefail && \
     libcap \
  && cp /etc/tor/torrc.sample /etc/tor/torrc \
  && echo 'SocksPort 9050' >> /etc/tor/torrc \
- && echo 'StrictNodes 1' >> /etc/tor/torrc \
+ && echo 'ClientOnly 1' >> /etc/tor/torrc \
  && setcap 'cap_net_bind_service=+ep' /usr/bin/socat \
  && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
@@ -33,6 +33,8 @@ COPY echo.sh /
 
 # Set Tor Hidden Service default value
 ENV TOR_HOST=wizmoki7pm5r2bco4holq467cq53kicttzge47fmxtis4x6tpt2u4nqd.onion:80
+ENV SOCAT_OPTIONS="-d"
+ENV PORT=80
 
 EXPOSE 80
 EXPOSE 443
