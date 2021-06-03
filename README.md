@@ -7,6 +7,16 @@ reduce the cost of running the `wayback` service, and providing additional anony
 
 ## Installation
 
+### 1-Click Deploy
+<a href="https://heroku.com/deploy?template=https://github.com/wabarc/on-heroku">
+    <img
+    src="https://www.herokucdn.com/deploy/button.svg"
+    alt="Deploy Wayback to Heroku with 1-Click"
+    width="200px"
+    />
+</a>
+<br>
+
 ### Script (recommended)
 
 The script requires to run with the `root` user, on a Docker container may be better options.
