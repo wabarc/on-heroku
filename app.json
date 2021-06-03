@@ -1,0 +1,26 @@
+{
+  "name": "wayback",
+  "description": "A toolkit for snapshot webpage to Internet Archive, archive.today, IPFS and beyond.",
+  "keywords": [
+    "wayback"
+  ],
+  "website": "https://wabarc.eu.org/",
+  "repository": "https://github.com/wabarc/wayback",
+  "logo": "https://avatars.githubusercontent.com/u/66000339",
+  "success_url": "/",
+  "scripts": {
+    "target": "echo 'target'"
+  },
+  "env": {
+    "WAYBACK_ARGS": {
+      "description": "Arguments for run wayback.",
+      "value": "-d web"
+    },
+    "WAYBACK_CONFIGURATIONS": {
+      "required": false,
+      "description": "Configuration options for wayback",
+      "value": ""
+    }
+  },
+  "stack": "container"
+}
