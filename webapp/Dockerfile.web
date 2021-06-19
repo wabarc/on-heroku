@@ -32,7 +32,7 @@ COPY supervisord.conf /etc/
 COPY echo.sh /
 
 # Set Tor Hidden Service default value
-ENV TOR_HOST=wizmoki7pm5r2bco4holq467cq53kicttzge47fmxtis4x6tpt2u4nqd.onion:80
+ENV TOR_HOST=wabarcoww2bxmdbixj7sjwggv3fonh2rpflfiildegcydk5udkdckdyd.onion:80
 ENV SOCAT_OPTIONS="-d"
 ENV PORT=80
 

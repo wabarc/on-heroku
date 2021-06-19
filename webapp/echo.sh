@@ -7,7 +7,7 @@ set -eu pipefail
 #PORT="${PORT:=80}"
 echo "PORT: ${PORT}"
 
-#TOR_HOST="${TOR_HOST:=wizmoki7pm5r2bco4holq467cq53kicttzge47fmxtis4x6tpt2u4nqd.onion:80}"
+#TOR_HOST="${TOR_HOST:=wabarcoww2bxmdbixj7sjwggv3fonh2rpflfiildegcydk5udkdckdyd.onion:80}"
 echo "TOR_HOST: ${TOR_HOST}"
 
 # Waiting for Tor startup

@@ -2,4 +2,4 @@
 
 ## Environment variable
 
-- `TOR_HOST`: Your Tor Hidden Service hostname, format: `hostname.onion:port`, default to `wizmoki7pm5r2bco4holq467cq53kicttzge47fmxtis4x6tpt2u4nqd.onion:80`
+- `TOR_HOST`: Your Tor Hidden Service hostname, format: `hostname.onion:port`, default to `wabarcoww2bxmdbixj7sjwggv3fonh2rpflfiildegcydk5udkdckdyd.onion:80`
