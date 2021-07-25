@@ -16,11 +16,10 @@ RUN echo @edge https://dl-cdn.alpinelinux.org/alpine/edge/community >> /etc/apk/
     dumb-init \
     libstdc++ \
     nss@edge \
-    ffmpeg \
+    ffmpeg@edge \
     chromium@edge \
     harfbuzz@edge \
-    libwebp-tools \
-    freetype \
+    freetype@edge \
     ttf-freefont \
     ttf-font-awesome \
     font-noto \
@@ -37,6 +36,7 @@ RUN echo @edge https://dl-cdn.alpinelinux.org/alpine/edge/community >> /etc/apk/
     py3-setuptools \
     socat \
     libcap \
+    libwebp-tools \
  && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 COPY entrypoint.sh /
