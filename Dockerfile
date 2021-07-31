@@ -36,6 +36,7 @@ RUN echo @edge https://dl-cdn.alpinelinux.org/alpine/edge/community >> /etc/apk/
     py3-setuptools \
     socat \
     libcap \
+    youtube-dl \
     libwebp-tools \
  && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
