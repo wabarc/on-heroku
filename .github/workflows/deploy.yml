@@ -2,6 +2,11 @@ name: Deploy
 
 on:
   workflow_dispatch:
+    inputs:
+      tier:
+        description: 'Deployment environment: main, edge'
+        required: false
+        default: 'main'
   repository_dispatch:
     types: [deploy]
 
@@ -10,10 +15,22 @@ jobs:
     name: Continue
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.from == 'wabarc/wayback' }} || ${{ github.event_name == 'workflow_dispatch' }}
+    outputs:
+      tier:  ${{ steps.tier.outputs.name }}
     steps:
       - name: Continue
         run: |
           echo 'Deploy continue'
+      - name: Choose environment
+        id: tier
+        run: |
+          if [ -z "${{ github.event.inputs.tier }}" ]; then
+            echo "::set-output name=name::main"
+            echo 'Deploy with tier main'
+          else
+            echo "::set-output name=name::${{ github.event.inputs.tier }}"
+            echo 'Deploy with tier ${{ github.event.inputs.tier }}'
+          fi
 
   demo-x:
     name: Deploy Heroku X
@@ -28,6 +45,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          ref: ${{ needs.continue.outputs.tier }}
 
       - name: Set up Heroku
         run: |
@@ -70,6 +88,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          ref: ${{ needs.continue.outputs.tier }}
 
       - name: Set up Heroku
         run: |
@@ -111,12 +130,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          ref: ${{ needs.continue.outputs.tier }}
 
       - name: Replace base image
         run: |
           echo 'original:'
           head -n1 ./Dockerfile
-          sed -i 's/ghcr.io\/wabarc\/wayback/ghcr.io\/wabarc\/wayback:edge/g' ./Dockerfile
+          sed -Ei 's/ghcr.io\/wabarc\/wayback.*/ghcr.io\/wabarc\/wayback:edge/g' ./Dockerfile
           echo 'replaced:'
           head -n1 ./Dockerfile
 
