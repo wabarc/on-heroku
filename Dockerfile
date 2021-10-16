@@ -42,6 +42,7 @@ RUN echo @edge https://dl-cdn.alpinelinux.org/alpine/edge/community >> /etc/apk/
     libwebp-tools \
  && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
+COPY cleaner.sh /
 COPY entrypoint.sh /
 COPY supervisord.conf /etc/
 
