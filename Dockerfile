@@ -66,6 +66,9 @@ ENV CHROME_BIN=/usr/bin/chromium-browser \
     CHROME_PATH=/usr/lib/chromium/ \
     GC_MEM=2048
 
+ENV WAYBACK_STORAGE_DIR="/tmp/reduxer" \
+    WAYBACK_ARGS="-d web"
+
 ENTRYPOINT ["dumb-init", "--"]
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
