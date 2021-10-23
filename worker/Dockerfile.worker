@@ -46,10 +46,13 @@ COPY cleaner.sh /
 COPY entrypoint.sh /
 COPY supervisord.conf /etc/
 
-RUN chown wayback:nogroup /var/log/tor && \
-    chown wayback:nogroup /var/lib/tor && \
-    chmod a+r /etc/supervisord.conf && \
-    chmod a+r /entrypoint.sh && \
+RUN set -ex; \
+    chown wayback:nogroup /var/log/tor; \
+    chown wayback:nogroup /var/lib/tor; \
+    chmod a+r /etc/supervisord.conf /entrypoint.sh /cleaner.sh; \
+    \
+    sed -i 's/User/#User/g' /etc/tor/torrc; \
+    \
     setcap 'cap_net_bind_service=+ep' /usr/bin/socat
 
 USER wayback
