@@ -67,7 +67,9 @@ EXPOSE 8964
 
 ENV CHROME_BIN=/usr/bin/chromium-browser \
     CHROME_PATH=/usr/lib/chromium/ \
-    GC_MEM=2048
+    CHROMEDP_DISABLE_GPU=true \
+    CHROMEDP_NO_SANDBOX=true \
+    GC_MEM=500
 
 ENV WAYBACK_STORAGE_DIR="/tmp/reduxer" \
     WAYBACK_ARGS="-d web"
