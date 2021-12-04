@@ -8,18 +8,18 @@ ENV BASE_DIR /wayback
 WORKDIR ${BASE_DIR}
 
 # Ref: https://wiki.alpinelinux.org/wiki/Fonts
-RUN echo @edge https://dl-cdn.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
-    echo @edge https://dl-cdn.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
+RUN echo @v3.15 https://dl-cdn.alpinelinux.org/alpine/v3.15/community >> /etc/apk/repositories && \
+    echo @v3.15 https://dl-cdn.alpinelinux.org/alpine/v3.15/main >> /etc/apk/repositories && \
     set -o pipefail && \
     apk add --no-cache \
     dbus \
     dumb-init \
     libstdc++ \
-    nss@edge \
-    ffmpeg@edge \
-    chromium@edge \
-    harfbuzz@edge \
-    freetype@edge \
+    nss@v3.15 \
+    ffmpeg@v3.15 \
+    chromium@v3.15 \
+    harfbuzz@v3.15 \
+    freetype@v3.15 \
     ttf-freefont \
     ttf-font-awesome \
     font-noto \
