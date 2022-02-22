@@ -21,6 +21,12 @@ fi
 if [ -z "${CHROMEDP_DISABLE_GPU}" ]; then
     export CHROMEDP_DISABLE_GPU=true
 fi
+if [ -z "${CHROMEDP_NO_HEADLESS}" ]; then
+    export CHROMEDP_NO_HEADLESS=false
+fi
+if [ -z "${CHROMEDP_USER_AGENT}" ]; then
+    export CHROMEDP_USER_AGENT="Mozilla/5.0 (en-us) AppleWebKit/525.13 (KHTML, like Gecko) Version/3.1 Safari/525.13"
+fi
 
 # execute wayback command
 # more args see: https://github.com/wabarc/wayback#usage
