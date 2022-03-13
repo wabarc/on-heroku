@@ -40,16 +40,20 @@ RUN echo @v3.15 https://dl-cdn.alpinelinux.org/alpine/v3.15/community >> /etc/ap
     rtmpdump \
     youtube-dl \
     libwebp-tools \
+    xvfb \
+    xkbcomp \
+    dbus-x11 \
  && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 COPY cleaner.sh /
+COPY starter.sh /
 COPY entrypoint.sh /
 COPY supervisord.conf /etc/
 
 RUN set -ex; \
     chown wayback:nogroup /var/log/tor; \
     chown wayback:nogroup /var/lib/tor; \
-    chmod a+r /etc/supervisord.conf /entrypoint.sh /cleaner.sh; \
+    chmod a+r /etc/supervisord.conf /*.sh; \
     \
     sed -i 's/User/#User/g' /etc/tor/torrc; \
     \
@@ -60,12 +64,15 @@ USER wayback
 ENV WAYBACK_TOR_LOCAL_PORT=8964
 ENV SOCAT_OPTIONS="-d"
 ENV PORT=80
+ENV DISPLAY=:99
+ENV CHROMIUM_WORKSPACE="${BASE_DIR}/chromium"
 
 EXPOSE 80
 EXPOSE 443
 EXPOSE 8964
 
 ENV CHROME_BIN=/usr/bin/chromium-browser \
+    CHROME_REMOTE_ADDR=127.0.0.1:9222 \
     CHROME_PATH=/usr/lib/chromium/ \
     CHROMEDP_DISABLE_GPU=true \
     CHROMEDP_NO_SANDBOX=true \
